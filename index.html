@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>SAR DTA MB8 - Professional Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    :root { 
+        --primary-color: #003366; 
+        --accent-color: #007bff; 
+        --danger-color: #dc3545; 
+        --bg-color: #f4f7f6; 
+        --card-bg: #ffffff; 
+        --text-color: #333;
+        --border-color: #ccc;
+    }
+
+    [data-theme="dark"] {
+        --bg-color: #121212;
+        --card-bg: #1e1e1e;
+        --text-color: #e0e0e0;
+        --border-color: #444;
+        --primary-color: #4da3ff;
+    }
+
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); padding: 10px; color: var(--text-color); transition: 0.3s; margin: 0; }
+    .container { max-width: 100%; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    
+    .top-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+    .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    #themeToggle { background-color: #444; color: white; }
+    #deleteForm { background-color: var(--danger-color); color: white; }
+    
+    header { text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+    .logo-img { max-width: 180px; margin-bottom: 10px; transition: 0.3s; }
+
+    .form-section { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 14px; color: var(--primary-color); }
+    
+    select, input, textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; background-color: var(--card-bg); color: var(--text-color); font-size: 16px; box-sizing: border-box; }
+    textarea { height: 80px; resize: none; }
+    .grid-row { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    
+    .field-wrapper { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .remove-btn-inline { background: var(--danger-color); color: white; border: none; border-radius: 8px; width: 48px; height: 48px; cursor: pointer; font-weight: bold; font-size: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    
+    .car-block { background: rgba(150, 150, 150, 0.1); padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 15px; }
+    .add-btn { color: var(--accent-color); font-weight: bold; padding: 10px 0; display: block; font-size: 14px; cursor: pointer; }
+    .remove-btn-block { border: 1px solid var(--danger-color); color: var(--danger-color); padding: 10px; border-radius: 8px; margin-top: 10px; width: 100%; background: none; font-weight: bold; }
+    
+    #submit { background-color: var(--primary-color); color: white; width: 100%; font-size: 18px; height: 55px; margin-top: 20px; border: none; border-radius: 10px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-controls">
+        <button type="button" id="themeToggle" class="btn">☀️ Light Mode</button>
+        <button type="button" id="deleteForm" class="btn">🗑️ Reset Form</button>
+    </div>
+
+    <header>
+        <img src="" alt="SAR Logo" class="logo-img" id="mainLogo">
+        <h2 style="margin: 0;">DTA</h2>
+    </header>
+
+    <form id="dta-form">
+        <div class="grid-row">
+            <div class="form-section"><label>Date</label><input id="date" name="date" type="date"></div>
+            <div class="form-section"><label>Trip Type</label><select id="tripType" name="tripType"><option value="Going">Going</option><option value="Back">Back</option></select></div>
+        </div>
+
+        <div class="form-section">
+            <label>Activity</label>
+            <select id="activity" name="activity">
+                <option value="">Select Activity</option>
+                <option value="PM-01-Indoor">PM-01-Indoor</option>
+                <option value="PM-03-Indoor">PM-03-Indoor</option>
+                <option value="PM-06-Indoor">PM-06-Indoor</option>
+                <option value="PM-03-Outdoor point machine">PM-03-Outdoor point machine</option>
+                <option value="PM-1Y-Outdoor Axle">PM-1Y-Outdoor Axle</option>
+                <option value="PM-06-Outdoor Point machine">PM-06-Outdoor Point machine</option>
+                <option value="PM-03M -RSM">PM-03M -RSM</option>
+                <option value="CM">CM</option>
+                <option value="Test">Test</option>
+                <option value="RFI">RFI</option>
+                <option value="Check">Check</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="grid-row">
+            <div class="form-section"><label>Start Time</label><input id="startTime" name="startTime" type="time"></div>
+            <div class="form-section"><label>Finish Time</label><input id="finishTime" name="finishTime" type="time"></div>
+        </div>
+
+        <div class="form-section">
+            <label>Team Members</label>
+            <div id="nameFields">
+                <div class="field-wrapper">
+                    <select name="name" onchange="updateDriverLists()">
+                        <option value="">Select Member</option>
+                        <option value="Abdullah Yousef Alsomaly">Abdullah Yousef Alsomaly</option>
+                        <option value="Abdullah atta">Abdullah atta</option>
+                        <option value="Abdulaziz AlAnazi">Abdulaziz AlAnazi</option>
+                        <option value="Abdulwahab Ahmed Ous">Abdulwahab Ahmed Ous</option>
+                        <option value="Ali Saud Al Rumeih">Ali Saud Al Rumeih</option>
+                        <option value="Hussain Mohammed Tuffaha">Hussain Mohammed Tuffaha</option>
+                        <option value="Jehad Mohammed Alzahrani">Jehad Mohammed Alzahrani</option>
+                        <option value="Khaled Attia Al Khaldi">Khaled Attia Al Khaldi</option>
+                        <option value="Khaled A. Al-harbi">Khaled A. Al-harbi</option>
+                        <option value="Khaled Assaf Al Otaibi">Khaled Assaf Al Otaibi</option>
+                        <option value="Majed A. Albalawi">Majed A. Albalawi</option>
+                        <option value="Meshal Naif Al Mutairi">Meshal Naif Al Mutairi</option>
+                        <option value="Mohammed Ibrahem Haddi Mobarki">Mohammed Ibrahem Haddi Mobarki</option>
+                        <option value="Moaaz Abdulkareem AlSaif">Moaaz Abdulkareem AlSaif</option>
+                        <option value="Nasser Abdullah AlMuhtarish">Nasser Abdullah AlMuhtarish</option>
+                        <option value="Nawaf Khalid Alsolami">Nawaf Khalid Alsolami</option>
+                        <option value="Prathyush">Prathyush</option>
+                        <option value="Rashid Alshmrani">Rashid Alshmrani</option>
+                        <option value="Rayan Alfaifi">Rayan Alfaifi</option>
+                        <option value="Saif Faihan Al Subaie">Saif Faihan Al Subaie</option>
+                        <option value="Yazeed K. Al-mutairi">Yazeed K. Al-mutairi</option>
+                        <option value="Labor">Labor</option>
+                    </select>
+                </div>
+            </div>
+            <span class="add-btn" onclick="addField('nameFields', 'name')">+ Add Member</span>
+        </div>
+
+        <div class="grid-row">
+            <div class="form-section">
+                <label>Sites</label>
+                <div id="siteFields">
+                    <div class="field-wrapper">
+                        <select name="site">
+                            <option value="">Select Site</option>
+                            <option value="52">52</option><option value="52H">52H</option><option value="52M">52M</option>
+                            <option value="52A">52A</option><option value="52B">52B</option><option value="52C">52C</option>
+                            <option value="52D">52D</option><option value="52E">52E</option><option value="52F">52F</option>
+                            <option value="54">54</option><option value="54A">54A</option><option value="54B">54B</option>
+                            <option value="54C">54C</option><option value="55">55</option><option value="55A">55A</option>
+                            <option value="55B">55B</option><option value="56">56</option>
+                        </select>
+                    </div>
+                </div>
+                <span class="add-btn" onclick="addField('siteFields', 'site')">+ Add Site</span>
+            </div>
+            <div class="form-section">
+                <label>GSM-R</label>
+                <div id="gsmFields">
+                    <div class="field-wrapper">
+                        <select name="gsm">
+                            <option value="">Select GSM-R</option>
+                            <option value="82840040">82840040</option>
+                            <option value="82841193">82841193</option>
+                            <option value="82841183">82841183</option>
+                            <option value="82849325">82849325</option>
+                        </select>
+                    </div>
+                </div>
+                <span class="add-btn" onclick="addField('gsmFields', 'gsm')">+ Add GSM</span>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>Vehicles</label>
+            <div id="vehicleContainer">
+                <div class="car-block">
+                    <label>Vehicle</label>
+                    <select name="car">
+                        <option value="">Select Car</option>
+                        <option value="Fortuner 5135 EGR">Fortuner 5135 EGR</option>
+                        <option value="Fortuner 2583 V X R">Fortuner 2583 V X R</option>
+                        <option value="Fortuner 2577 V X R">Fortuner 2577 V X R</option>
+                        <option value="Hilux 4866 ETB">Hilux 4866 ETB</option>
+                    </select>
+                    <label style="margin-top:10px;">Driver (Go)</label><select name="driverGoing" class="driver-list"></select>
+                    <label style="margin-top:10px;">Driver (Back)</label><select name="driverBack" class="driver-list"></select>
+                </div>
+            </div>
+            <span class="add-btn" onclick="addVehicle()">+ Add Another Vehicle</span>
+        </div>
+
+        <div class="form-section">
+            <label>Work Status</label>
+            <select id="status" name="status"><option value="Done">Done ✅</option><option value="On going">On going ⏳</option><option value="Need spare part">Need spare part 🛠️</option></select>
+        </div>
+
+        <div class="form-section">
+            <label>Comments</label>
+            <textarea id="comments" name="comments" placeholder="Write notes here..."></textarea>
+        </div>
+
+        <button id="submit" type="submit">📩 Generate Professional PDF</button>
+    </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    const form = document.getElementById('dta-form');
+    
+    const logoLight = "https://cdn.discordapp.com/attachments/809160987709669447/1502770450072207440/c4281c59-6b54-4203-8dbc-06581363f008-removebg-preview.png?ex=6a00eb8b&is=69ff9a0b&hm=52da41714e7184475b11e1831168525e5c457780279704b8852ddb7ce07d7796&";
+    const logoDark = "https://cdn.discordapp.com/attachments/809160987709669447/1502770177928990860/975f3539-c748-4558-a73d-3670d47fb658-removebg-preview_1.png?ex=6a00eb4a&is=69ff99ca&hm=7401d65731ef6cc35b24b63ead518e53ded9325748ce04a1cc93baf1c32826fa&";
+
+    const themeBtn = document.getElementById('themeToggle');
+    const mainImg = document.getElementById('mainLogo');
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        themeBtn.innerText = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        mainImg.src = theme === 'dark' ? logoDark : logoLight;
+        localStorage.setItem('sar_dta_v_final_theme', theme);
+    }
+    
+    themeBtn.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    applyTheme(localStorage.getItem('sar_dta_v_final_theme') || 'dark');
+
+    function saveToLocal() {
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((val, key) => { if(!data[key]) data[key] = []; data[key].push(val); });
+        localStorage.setItem('sar_dta_v_final_data', JSON.stringify(data));
+    }
+    form.addEventListener('input', saveToLocal);
+
+    function loadFromLocal() {
+        const saved = localStorage.getItem('sar_dta_v_final_data');
+        if (!saved) return;
+        const data = JSON.parse(saved);
+        for (const key in data) {
+            const vals = data[key];
+            if (vals.length > 1) {
+                for (let i = 1; i < vals.length; i++) {
+                    if (key === 'name') addField('nameFields', 'name', false);
+                    if (key === 'site') addField('siteFields', 'site', false);
+                    if (key === 'gsm') addField('gsmFields', 'gsm', false);
+                    if (key === 'car') addVehicle(false);
+                }
+            }
+        }
+        setTimeout(() => {
+            for (const key in data) {
+                document.querySelectorAll(`[name="${key}"]`).forEach((el, i) => { if(data[key][i]) el.value = data[key][i]; });
+            }
+            updateDriverLists();
+        }, 300);
+    }
+
+    function addField(containerId, name, save = true) {
+        const container = document.getElementById(containerId);
+        const wrapper = container.querySelector('.field-wrapper').cloneNode(true);
+        wrapper.querySelector('input, select').value = "";
+        const oldBtn = wrapper.querySelector('.remove-btn-inline');
+        if (oldBtn) oldBtn.remove();
+        const del = document.createElement("button");
+        del.innerText = "✖"; del.className = "remove-btn-inline"; del.type="button";
+        del.onclick = () => { wrapper.remove(); saveToLocal(); updateDriverLists(); };
+        wrapper.appendChild(del);
+        container.appendChild(wrapper);
+        if(save) saveToLocal();
+    }
+
+    function addVehicle(save = true) {
+        const container = document.getElementById('vehicleContainer');
+        const block = container.querySelector('.car-block').cloneNode(true);
+        block.querySelectorAll('select').forEach(s => s.value = "");
+        const oldBtn = block.querySelector('.remove-btn-block');
+        if (oldBtn) oldBtn.remove();
+        const del = document.createElement("button");
+        del.innerText = "🗑️ Remove Vehicle"; del.className = "remove-btn-block"; del.type="button";
+        del.onclick = () => { block.remove(); saveToLocal(); };
+        block.appendChild(del);
+        container.appendChild(block);
+        updateDriverLists();
+        if(save) saveToLocal();
+    }
+
+    function updateDriverLists() {
+        const namesHtml = document.querySelector('select[name="name"]').innerHTML;
+        document.querySelectorAll('.driver-list').forEach(list => {
+            const currentVal = list.value;
+            list.innerHTML = namesHtml;
+            list.value = currentVal;
+        });
+    }
+
+    window.onload = () => { loadFromLocal(); updateDriverLists(); };
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const dateVal = document.getElementById('date').value || "NoDate";
+        const tripVal = document.getElementById('tripType').value || "NoTrip";
+        const statusVal = document.getElementById('status').value || "-";
+        const fileName = `DTA_MB8_${dateVal}_${tripVal}.pdf`;
+
+        try { 
+            doc.addImage(logoLight, 'PNG', 150, 10, 45, 18); 
+        } catch(e) { console.log("PDF Logo failed"); }
+
+        doc.setFontSize(18);
+        doc.setTextColor(0, 51, 102);
+        doc.text("DTA", 15, 25);
+        doc.setDrawColor(0, 51, 102);
+        doc.line(15, 30, 195, 30);
+
+        // تعديل: عرض التاريخ والرحلة والحالة في سطر واحد منظم
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`DATE: ${dateVal}`, 15, 40);
+        doc.text(`TRIP: ${tripVal}`, 85, 40);
+        doc.text(`STATUS: ${statusVal}`, 150, 40);
+
+        doc.autoTable({
+            startY: 48,
+            head: [['Activity', 'Start Time', 'Finish Time']],
+            body: [[document.getElementById('activity').value || "-", document.getElementById('startTime').value, document.getElementById('finishTime').value]],
+            headStyles: { fillColor: [0, 51, 102] }
+        });
+
+        const team = [];
+        document.querySelectorAll('[name="name"]').forEach(s => { if(s.value) team.push([s.value]); });
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 10,
+            head: [['Team Members']],
+            body: team,
+            headStyles: { fillColor: [70, 70, 70] }
+        });
+
+        const sites = [];
+        const siteSelects = document.querySelectorAll('[name="site"]');
+        const gsmSelects = document.querySelectorAll('[name="gsm"]');
+        siteSelects.forEach((s, i) => { if(s.value) sites.push([s.value, gsmSelects[i]?.value || "-"]); });
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 10,
+            head: [['Site Number', 'GSM-R Number']],
+            body: sites,
+            headStyles: { fillColor: [70, 70, 70] }
+        });
+
+        const vehicles = [];
+        document.querySelectorAll('.car-block').forEach(b => {
+            const car = b.querySelector('[name="car"]').value;
+            if(car) vehicles.push([car, b.querySelector('[name="driverGoing"]').value, b.querySelector('[name="driverBack"]').value]);
+        });
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 10,
+            head: [['Vehicle', 'Driver (Go)', 'Driver (Back)']],
+            body: vehicles,
+            headStyles: { fillColor: [0, 102, 204] }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 15;
+        doc.setFont("helvetica", "bold");
+        doc.text("Comments:", 15, finalY);
+        doc.setFont("helvetica", "normal");
+        const commentText = document.getElementById('comments').value || "No additional comments.";
+        const splitComment = doc.splitTextToSize(commentText, 180);
+        doc.text(splitComment, 15, finalY + 8);
+
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+        doc.text("DTA MB8", 105, 285, { align: "center" });
+
+        doc.save(fileName);
+    };
+
+    document.getElementById('deleteForm').onclick = () => { if(confirm("Clear data?")) { localStorage.clear(); location.reload(); } };
+</script>
+
+</body>
+</html>
