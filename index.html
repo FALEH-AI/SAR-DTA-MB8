@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>SAR DTA MB8 - Professional Report</title>
+<title>DTA</title>
 <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
     :root { 
@@ -45,7 +45,7 @@
     .field-wrapper { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
     .remove-btn-inline { background: var(--danger-color); color: white; border: none; border-radius: 8px; width: 48px; height: 48px; cursor: pointer; font-weight: bold; font-size: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
     
-    .car-block { background: rgba(150, 150, 150, 0.1); padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 15px; }
+    .car-block, .activity-block { background: rgba(150, 150, 150, 0.1); padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 15px; }
     .add-btn { color: var(--accent-color); font-weight: bold; padding: 10px 0; display: block; font-size: 14px; cursor: pointer; }
     .remove-btn-block { border: 1px solid var(--danger-color); color: var(--danger-color); padding: 10px; border-radius: 8px; margin-top: 10px; width: 100%; background: none; font-weight: bold; }
     
@@ -72,27 +72,32 @@
         </div>
 
         <div class="form-section">
-            <label>Activity</label>
-            <select id="activity" name="activity">
-                <option value="">Select Activity</option>
-                <option value="PM-01-Indoor">PM-01-Indoor</option>
-                <option value="PM-03-Indoor">PM-03-Indoor</option>
-                <option value="PM-06-Indoor">PM-06-Indoor</option>
-                <option value="PM-03-Outdoor point machine">PM-03-Outdoor point machine</option>
-                <option value="PM-1Y-Outdoor Axle">PM-1Y-Outdoor Axle</option>
-                <option value="PM-06-Outdoor Point machine">PM-06-Outdoor Point machine</option>
-                <option value="PM-03M -RSM">PM-03M -RSM</option>
-                <option value="CM">CM</option>
-                <option value="Test">Test</option>
-                <option value="RFI">RFI</option>
-                <option value="Check">Check</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-
-        <div class="grid-row">
-            <div class="form-section"><label>Start Time</label><input id="startTime" name="startTime" type="time"></div>
-            <div class="form-section"><label>Finish Time</label><input id="finishTime" name="finishTime" type="time"></div>
+            <label>Activities</label>
+            <div id="activityContainer">
+                <div class="activity-block">
+                    <label>Activity</label>
+                    <select name="activity">
+                        <option value="">Select Activity</option>
+                        <option value="PM-01-Indoor">PM-01-Indoor</option>
+                        <option value="PM-03-Indoor">PM-03-Indoor</option>
+                        <option value="PM-06-Indoor">PM-06-Indoor</option>
+                        <option value="PM-03-Outdoor point machine">PM-03-Outdoor point machine</option>
+                        <option value="PM-1Y-Outdoor Axle">PM-1Y-Outdoor Axle</option>
+                        <option value="PM-06-Outdoor Point machine">PM-06-Outdoor Point machine</option>
+                        <option value="PM-03M -RSM">PM-03M -RSM</option>
+                        <option value="CM">CM</option>
+                        <option value="Test">Test</option>
+                        <option value="RFI">RFI</option>
+                        <option value="Check">Check</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <div style="flex: 1;"><label>Start Time</label><input name="startTime" type="time"></div>
+                        <div style="flex: 1;"><label>Finish Time</label><input name="finishTime" type="time"></div>
+                    </div>
+                </div>
+            </div>
+            <span class="add-btn" onclick="addActivity()">+ Add Another Activity</span>
         </div>
 
         <div class="form-section">
@@ -193,7 +198,7 @@
             <textarea id="comments" name="comments" placeholder="Write notes here..."></textarea>
         </div>
 
-        <button id="submit" type="submit">📩 Generate Professional PDF</button>
+        <button id="submit" type="submit">📩 Generate PDF</button>
     </form>
 </div>
 
@@ -227,27 +232,18 @@
     }
     form.addEventListener('input', saveToLocal);
 
-    function loadFromLocal() {
-        const saved = localStorage.getItem('sar_dta_v_final_data');
-        if (!saved) return;
-        const data = JSON.parse(saved);
-        for (const key in data) {
-            const vals = data[key];
-            if (vals.length > 1) {
-                for (let i = 1; i < vals.length; i++) {
-                    if (key === 'name') addField('nameFields', 'name', false);
-                    if (key === 'site') addField('siteFields', 'site', false);
-                    if (key === 'gsm') addField('gsmFields', 'gsm', false);
-                    if (key === 'car') addVehicle(false);
-                }
-            }
-        }
-        setTimeout(() => {
-            for (const key in data) {
-                document.querySelectorAll(`[name="${key}"]`).forEach((el, i) => { if(data[key][i]) el.value = data[key][i]; });
-            }
-            updateDriverLists();
-        }, 300);
+    function addActivity(save = true) {
+        const container = document.getElementById('activityContainer');
+        const block = container.querySelector('.activity-block').cloneNode(true);
+        block.querySelectorAll('select, input').forEach(el => el.value = "");
+        const oldBtn = block.querySelector('.remove-btn-block');
+        if (oldBtn) oldBtn.remove();
+        const del = document.createElement("button");
+        del.innerText = "🗑️ Remove Activity"; del.className = "remove-btn-block"; del.type="button";
+        del.onclick = () => { block.remove(); saveToLocal(); };
+        block.appendChild(del);
+        container.appendChild(block);
+        if(save) saveToLocal();
     }
 
     function addField(containerId, name, save = true) {
@@ -288,7 +284,32 @@
         });
     }
 
-    window.onload = () => { loadFromLocal(); updateDriverLists(); };
+    window.onload = () => { 
+        const saved = localStorage.getItem('sar_dta_v_final_data');
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (data.activity?.length > 1) {
+                for (let i = 1; i < data.activity.length; i++) addActivity(false);
+            }
+            if (data.name?.length > 1) {
+                for (let i = 1; i < data.name.length; i++) addField('nameFields', 'name', false);
+            }
+            if (data.site?.length > 1) {
+                for (let i = 1; i < data.site.length; i++) addField('siteFields', 'site', false);
+                for (let i = 1; i < data.gsm.length; i++) addField('gsmFields', 'gsm', false);
+            }
+            if (data.car?.length > 1) {
+                for (let i = 1; i < data.car.length; i++) addVehicle(false);
+            }
+            setTimeout(() => {
+                for (const key in data) {
+                    document.querySelectorAll(`[name="${key}"]`).forEach((el, i) => { if(data[key][i]) el.value = data[key][i]; });
+                }
+                updateDriverLists();
+            }, 300);
+        }
+        updateDriverLists(); 
+    };
 
     form.onsubmit = async (e) => {
         e.preventDefault();
@@ -300,9 +321,7 @@
         const statusVal = document.getElementById('status').value || "-";
         const fileName = `DTA_MB8_${dateVal}_${tripVal}.pdf`;
 
-        try { 
-            doc.addImage(logoLight, 'PNG', 150, 10, 45, 18); 
-        } catch(e) { console.log("PDF Logo failed"); }
+        try { doc.addImage(logoLight, 'PNG', 150, 10, 45, 18); } catch(e) {}
 
         doc.setFontSize(18);
         doc.setTextColor(0, 51, 102);
@@ -310,17 +329,22 @@
         doc.setDrawColor(0, 51, 102);
         doc.line(15, 30, 195, 30);
 
-        // تعديل: عرض التاريخ والرحلة والحالة في سطر واحد منظم
         doc.setFontSize(10);
         doc.setTextColor(100);
         doc.text(`DATE: ${dateVal}`, 15, 40);
         doc.text(`TRIP: ${tripVal}`, 85, 40);
         doc.text(`STATUS: ${statusVal}`, 150, 40);
 
+        const activities = [];
+        document.querySelectorAll('.activity-block').forEach(b => {
+            const act = b.querySelector('[name="activity"]').value;
+            if(act) activities.push([act, b.querySelector('[name="startTime"]').value, b.querySelector('[name="finishTime"]').value]);
+        });
+        
         doc.autoTable({
             startY: 48,
             head: [['Activity', 'Start Time', 'Finish Time']],
-            body: [[document.getElementById('activity').value || "-", document.getElementById('startTime').value, document.getElementById('finishTime').value]],
+            body: activities,
             headStyles: { fillColor: [0, 51, 102] }
         });
 
